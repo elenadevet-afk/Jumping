@@ -3,590 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редактор Настольных Игр для Genially</title>
+    <title>Modal Verbs Adventure</title>
     <style>
-        :root {
-            --primary: #6c29ff;
-            --primary-hover: #4300d6;
-            --bg-dark: #121212;
-            --bg-light: #f9f8fc;
-            --border-color: #c7c3d3;
-            --text-main: #232323;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: #f0edf5;
-            color: var(--text-main);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Панель настроек левая */
-        .sidebar {
-            width: 400px;
-            background: white;
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            flex-shrink: 0;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            background: var(--bg-dark);
-            color: white;
-        }
-
-        .sidebar-header h2 {
-            margin: 0;
-            font-size: 1.25rem;
-        }
-
-        .settings-scroll {
-            padding: 20px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        .section-title {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #767283;
-            margin: 20px 0 10px 0;
-            border-bottom: 2px solid var(--bg-light);
-            padding-bottom: 5px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 8px 12px;
-            box-sizing: border-box;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        /* Стили для вопросов */
-        .question-card {
-            background: var(--bg-light);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            position: relative;
-        }
-
-        .question-card .remove-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #d83f55;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 2px 6px;
-            font-size: 0.75rem;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-            transition: background 0.2s;
-        }
-
-        .btn:hover {
-            background: var(--primary-hover);
-        }
-
-        .btn-secondary {
-            background: #e8e6f0;
-            color: var(--bg-dark);
-            margin-top: 5px;
-        }
-        .btn-secondary:hover {
-            background: var(--border-color);
-        }
-
-        .export-area {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            background: white;
-        }
-
-        /* Область предпросмотра правая */
-        .preview-pane {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-        }
-
-        .preview-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(18,18,18,0.7);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-        }
-
-        /* Окно симулятора игры (пропорции 16:9 как в Genially) */
-        #game-simulator {
-            width: 100%;
-            max-width: 800px;
-            height: 450px;
-            background: #fff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+        html, body { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif; 
         }
         
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>Редактор для Genially</h2>
-        </div>
-        
-        <div class="settings-scroll">
-            <div class="section-title">Внешний вид</div>
-            <div class="form-group">
-                <label>Название игры</label>
-                <input type="text" id="game-title" value="Modal Verbs Venture">
-            </div>
-            <div class="form-group">
-                <label>Ссылка на фон (URL картинки)</label>
-                <input type="text" id="game-bg" value="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000">
-            </div>
-            <div class="form-group">
-                <label>Иконка персонажа (Emoji или URL)</label>
-                <input type="text" id="game-char" value="⭐">
-            </div>
-            <div class="form-group">
-                <label>Количество клеток на поле</label>
-                <select id="game-cells-count" onchange="rebuildBoardPreview()">
-                    <option value="5">5 клеток</option>
-                    <option value="7" selected>7 клеток</option>
-                    <option value="10">10 клеток</option>
-                </select>
-            </div>
-
-            <div class="section-title">Вопросы и задания</div>
-            <div id="questions-list">
-                </div>
-            <button class="btn btn-secondary" onclick="addQuestionData()">+ Добавить вопрос</button>
-        </div>
-
-        <div class="export-area">
-            <button class="btn" onclick="exportToHTML()">Скачать HTML для Genially</button>
-        </div>
-    </div>
-
-    <div class="preview-pane">
-        <div class="preview-badge">Адаптивное превью (16:9)</div>
-        <div id="game-simulator">
-            <iframe id="preview-iframe"></iframe>
-        </div>
-    </div>
-
-    <script>
-        let questions = [
-            { q: "You ___ study hard to pass the exam.", a: "must", b: "might", right: "a" },
-            { q: "___ I borrow your textbook for a minute?", a: "Must", b: "May", right: "b" },
-            { q: "He ___ speak three languages fluently.", a: "can", b: "should", right: "a" }
-        ];
-
-        function init() {
-            renderQuestionsEditor();
-            updateLivePreview();
-            
-            document.getElementById('game-title').addEventListener('input', updateLivePreview);
-            document.getElementById('game-bg').addEventListener('input', updateLivePreview);
-            document.getElementById('game-char').addEventListener('input', updateLivePreview);
-        }
-
-        function renderQuestionsEditor() {
-            const container = document.getElementById('questions-list');
-            container.innerHTML = '';
-            questions.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'question-card';
-                card.innerHTML = `
-                    <button class="remove-btn" onclick="removeQuestion(${index})">✕</button>
-                    <div class="form-group">
-                        <label>Вопрос ${index + 1}</label>
-                        <input type="text" value="${item.q}" oninput="updateQuestionValue(${index}, 'q', this.value)">
-                    </div>
-                    <div class="form-group" style="display:flex; gap:10px; margin-bottom:5px;">
-                        <div>
-                            <label>Вариант А</label>
-                            <input type="text" value="${item.a}" oninput="updateQuestionValue(${index}, 'a', this.value)">
-                        </div>
-                        <div>
-                            <label>Вариант Б</label>
-                            <input type="text" value="${item.b}" oninput="updateQuestionValue(${index}, 'b', this.value)">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Правильный ответ</label>
-                        <select onchange="updateQuestionValue(${index}, 'right', this.value)">
-                            <option value="a" ${item.right === 'a' ? 'selected' : ''}>Вариант А</option>
-                            <option value="b" ${item.right === 'b' ? 'selected' : ''}>Вариант Б</option>
-                        </select>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function updateQuestionValue(index, key, val) {
-            questions[index][key] = val;
-            updateLivePreview();
-        }
-
-        function addQuestionData() {
-            questions.push({ q: "New Question?", a: "Option A", b: "Option B", right: "a" });
-            renderQuestionsEditor();
-            updateLivePreview();
-        }
-
-        function removeQuestion(index) {
-            questions.splice(index, 1);
-            renderQuestionsEditor();
-            updateLivePreview();
-        }
-
-        function rebuildBoardPreview() {
-            updateLivePreview();
-        }
-
-        // ВЕРСИЯ КОДА ИГРЫ, ОПТИМИЗИРОВАННАЯ ПОД IFRAME / GENIALLY
-        function generateGameHTML() {
-            const title = document.getElementById('game-title').value;
-            const bg = document.getElementById('game-bg').value;
-            const character = document.getElementById('game-char').value;
-            const cellCount = parseInt(document.getElementById('game-cells-count').value);
-
-            return `<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
-
-        /* Оболочка подстраивается под размеры фрейма Genially */
+        /* Фон на весь экран Genially */
         .wrapper {
-            box-sizing: border-box;
-            width: 100%;
-            height: 100%;
-            padding: 15px;
-            background: url('${bg}') center/cover no-repeat;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            width: 100%; height: 100%; 
+            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000') center/cover no-repeat;
+            position: relative; box-sizing: border-box;
         }
 
-        .game-container {
-            background: rgba(255, 255, 255, 0.94);
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            box-sizing: border-box;
-            justify-content: space-between;
+        /* Платформы (картинка деревянной доски) */
+        .platform {
+            position: absolute; width: 75px; height: 40px;
+            background: url('https://img.icons8.com/color/96/wooden-plank.png') center/contain no-repeat;
+            transform: translate(-50%, -50%);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 12px; color: white;
+            text-shadow: 1px 1px 2px black; z-index: 5;
         }
 
-        h1 {
-            margin: 0 0 10px 0;
-            color: #121212;
-            font-size: 1.3rem;
-            text-align: center;
-        }
-
-        .board {
-            display: flex;
-            justify-content: space-between;
-            background: #e8e6f0;
-            padding: 10px;
-            border-radius: 10px;
-            position: relative;
-            margin-bottom: 10px;
-        }
-
-        .cell {
-            width: 45px;
-            height: 45px;
-            background: white;
-            border: 2px solid #c7c3d3;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.9rem;
-            position: relative;
-            box-sizing: border-box;
-        }
-
-        .cell.finish {
-            background: #25a782;
-            color: white;
-            border-color: #16644e;
-        }
-
+        /* Контейнер игрока (координаты) */
         #player {
-            position: absolute;
-            font-size: 1.8rem;
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            z-index: 10;
-            pointer-events: none;
-            bottom: 10px;
+            position: absolute; width: 50px; height: 50px;
+            transform: translate(-50%, -85%);
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10; pointer-events: none;
         }
 
-        .victory-jump {
-            animation: jumpThreeTimes 1.5s ease-in-out forwards;
+        /* Сам персонаж (эмодзи или картинка) */
+        #player-sprite {
+            width: 100%; height: 100%;
+            font-size: 2.2rem; display: flex; align-items: center; justify-content: center;
         }
 
-        @keyframes jumpThreeTimes {
-            0%, 33%, 66%, 100% { transform: translateY(0); }
-            16%, 50%, 83% { transform: translateY(-25px); }
+        /* Победная анимация: ровно 3 прыжка персонажа */
+        .victory-jump { animation: winJump 1.2s ease-in-out 3 forwards; }
+        @keyframes winJump { 
+            0%, 100% { transform: translate(-50%, -85%) scale(1); } 
+            50% { transform: translate(-50%, -140%) scale(1.15); } 
         }
 
-        .quiz-box {
-            background: #f9f8fc;
-            border: 1px solid #c7c3d3;
-            border-radius: 8px;
-            padding: 15px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-sizing: border-box;
-            min-height: 0; 
+        /* Панель вопросов снизу */
+        .quiz-panel {
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 600px; background: rgba(255,255,255,0.96);
+            border-radius: 12px; padding: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            z-index: 20; text-align: center; box-sizing: border-box;
         }
 
-        .question {
-            font-size: 1.1rem;
-            margin-bottom: 12px;
-            font-weight: 600;
-            text-align: center;
+        .question { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #1a1a1a; }
+        .buttons { display: flex; gap: 12px; justify-content: center; }
+        
+        .btn-ui {
+            background: #6c29ff; color: white; border: none; padding: 10px 20px;
+            font-size: 0.9rem; border-radius: 20px; cursor: pointer; font-weight: bold;
+            transition: background 0.2s, transform 0.1s;
         }
+        .btn-ui:hover { background: #4300d6; transform: translateY(-1px); }
 
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+        /* Сердечки (Жизни) */
+        .hud-lives {
+            position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.65);
+            padding: 6px 14px; border-radius: 20px; display: flex; gap: 4px; z-index: 20;
+            color: white; font-weight: bold; align-items: center; font-size: 0.9rem;
         }
-
-        .opt-btn {
-            background: #6c29ff;
-            color: white;
-            border: none;
-            padding: 10px;
-            font-size: 0.95rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .opt-btn:hover { background: #4300d6; }
-
-        .feedback {
-            font-size: 1rem;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 8px;
-            height: 20px;
-        }
+        .heart { color: #d83f55; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
 <div class="wrapper">
-    <div class="game-container">
-        <h1>${title}</h1>
-        
-        <div class="board" id="board">
-            <div id="player">${character}</div>
-        </div>
+    <div class="hud-lives">HP: <div id="hearts-box"></div></div>
+    <div id="map-objects"></div>
+    <div id="player"><div id="player-sprite">🧙</div></div>
 
-        <div class="quiz-box" id="quiz-box">
-            <div class="question" id="question-text">Загрузка игры...</div>
-            <div class="options-grid" id="options-container"></div>
-            <div class="feedback" id="feedback-text"></div>
-        </div>
+    <div class="quiz-panel" id="quiz-panel">
+        <div class="question" id="q-text">Загрузка...</div>
+        <div class="buttons" id="b-box"></div>
     </div>
 </div>
 
 <script>
-    const questions = ${JSON.stringify(questions)};
-    const totalCells = ${cellCount};
-    let currentCell = 0;
-    let currentQuestionIndex = 0;
+    // ==========================================
+    // БЛОК НАСТРОЕК (МЕНЯЙТЕ ЗАДАНИЯ ПРЯМО ТУТ)
+    // ==========================================
+    const maxLives = 3; // Количество жизней
+    
+    // Координаты (x, y) платформ в % от экрана. 
+    // Если тип "wrong" — это ловушка. Игрок потеряет жизнь и вернется назад.
+    const platforms = [
+        { "x": 15, "y": 75, "type": "start", "question": "Are you ready to practice Modal Verbs?", "answerA": "Let's go!", "answerB": "No, wait" },
+        { "x": 35, "y": 60, "type": "correct", "question": "You ___ look at me when I'm speaking to you!", "answerA": "must", "answerB": "might" },
+        { "x": 50, "y": 42, "type": "wrong", "question": "Ой! Это ложная платформа-ловушка.", "answerA": "Назад", "answerB": "Упс" },
+        { "x": 70, "y": 55, "type": "correct", "question": "I ___ ride a bicycle when I was only five.", "answerA": "could", "answerB": "can" },
+        { "x": 88, "y": 35, "type": "finish", "question": "", "answerA": "", "answerB": "" }
+    ];
+    // ==========================================
 
-    const board = document.getElementById('board');
+    let currentLives = maxLives;
+    let currentPlatformIndex = 0;
+
+    const mapObjects = document.getElementById('map-objects');
     const player = document.getElementById('player');
-    const questionText = document.getElementById('question-text');
-    const optionsContainer = document.getElementById('options-container');
-    const feedbackText = document.getElementById('feedback-text');
+    const qText = document.getElementById('q-text');
+    const bBox = document.getElementById('b-box');
+    const heartsBox = document.getElementById('hearts-box');
 
-    function createBoard() {
-        for (let i = 0; i < totalCells; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            if (i === totalCells - 1) {
-                cell.className = 'cell finish';
-                cell.innerText = '🏁';
-            } else {
-                cell.innerText = i + 1;
-            }
-            board.appendChild(cell);
+    function initGame() {
+        currentLives = maxLives;
+        currentPlatformIndex = 0;
+        player.classList.remove('victory-jump');
+        buildMap();
+    }
+
+    function buildMap() {
+        mapObjects.innerHTML = '';
+        platforms.forEach((p) => {
+            const el = document.createElement('div');
+            el.className = 'platform';
+            el.style.left = p.x + '%';
+            el.style.top = p.y + '%';
+            if(p.type === 'finish') el.innerHTML = '🏁';
+            mapObjects.appendChild(el);
+        });
+        
+        updateHUD();
+        syncPlayerPosition();
+        updateQuiz();
+    }
+
+    function syncPlayerPosition() {
+        const activePlat = platforms[currentPlatformIndex];
+        if(activePlat) {
+            player.style.left = activePlat.x + '%';
+            player.style.top = activePlat.y + '%';
         }
-        // Следим за ресайзом окна в Genially
-        window.addEventListener('resize', movePlayer);
-        setTimeout(movePlayer, 150);
     }
 
-    function movePlayer() {
-        const cells = document.querySelectorAll('.cell');
-        if(!cells[currentCell]) return;
-        const targetCell = cells[currentCell];
-        player.style.left = targetCell.offsetLeft + 'px';
-        player.style.width = targetCell.offsetWidth + 'px';
+    function updateHUD() {
+        heartsBox.innerHTML = '';
+        for(let i = 0; i < currentLives; i++) {
+            heartsBox.innerHTML += '<span class="heart">❤️</span>';
+        }
+        if(currentLives <= 0) gameOver();
     }
 
-    function loadQuestion() {
-        if (currentCell >= totalCells - 1) {
-            endGame();
+    function updateQuiz() {
+        const currentPlat = platforms[currentPlatformIndex];
+        if (!currentPlat || currentPlat.type === 'finish') {
+            winGame();
             return;
         }
 
-        feedbackText.innerText = "";
-        if (currentQuestionIndex >= questions.length) {
-            currentQuestionIndex = 0;
-        }
-
-        const qData = questions[currentQuestionIndex];
-        questionText.innerText = qData.q;
-        
-        optionsContainer.innerHTML = \`
-            <button class="opt-btn" onclick="checkAnswer('a')">\${qData.a}</button>
-            <button class="opt-btn" onclick="checkAnswer('b')">\${qData.b}</button>
-        \`;
+        qText.innerText = currentPlat.question;
+        bBox.innerHTML = `
+            <button class="btn-ui" onclick="handleChoice('a')">${currentPlat.answerA}</button>
+            <button class="btn-ui" onclick="handleChoice('b')">${currentPlat.answerB}</button>
+        `;
     }
 
-    function checkAnswer(chosen) {
-        const qData = questions[currentQuestionIndex];
-        if (chosen === qData.right) {
-            feedbackText.style.color = "#25a782";
-            feedbackText.innerText = "Правильно!";
-            currentCell++;
-            movePlayer();
+    function handleChoice(letter) {
+        let targetIdx = currentPlatformIndex + 1;
+        if (targetIdx >= platforms.length) return;
+
+        const targetPlat = platforms[targetIdx];
+
+        if(targetPlat.type === 'wrong') {
+            currentPlatformIndex = targetIdx;
+            syncPlayerPosition();
+            currentLives--;
+            updateHUD();
+            
+            if(currentLives > 0) {
+                setTimeout(() => {
+                    currentPlatformIndex = Math.max(0, targetIdx - 1);
+                    syncPlayerPosition();
+                    updateQuiz();
+                }, 800);
+            }
         } else {
-            feedbackText.style.color = "#d83f55";
-            feedbackText.innerText = "Неверно. Попробуй еще раз!";
+            currentPlatformIndex = targetIdx;
+            syncPlayerPosition();
+            setTimeout(updateQuiz, 600);
         }
-        currentQuestionIndex++;
-        setTimeout(loadQuestion, 1200);
     }
 
-    function endGame() {
-        questionText.innerText = "🎉 Молодцы! Отличный результат!";
-        optionsContainer.innerHTML = "";
-        feedbackText.innerText = "";
+    function gameOver() {
+        qText.innerText = "💥 Жизни закончились! Попробуем сначала?";
+        bBox.innerHTML = '<button class="btn-ui" onclick="initGame()">Сбросить уровень</button>';
+    }
+
+    function winGame() {
+        qText.innerText = "🎉 Великолепно! Вы успешно прошли весь маршрут!";
+        bBox.innerHTML = '';
         player.classList.add('victory-jump');
     }
 
-    createBoard();
-    loadQuestion();
-<\/script>
+    window.onload = initGame;
+</script>
 
-</body>
-</html>`;
-        }
-
-        function updateLivePreview() {
-            const iframe = document.getElementById('preview-iframe');
-            const doc = iframe.contentDocument || iframe.contentWindow.document;
-            doc.open();
-            doc.write(generateGameHTML());
-            doc.close();
-        }
-
-        function exportToHTML() {
-            const htmlContent = generateGameHTML();
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = document.getElementById('game-title').value.replace(/\s+/g, '_') + '_genially.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        window.onload = init;
-    </script>
 </body>
 </html>
