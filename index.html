@@ -3,209 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modal Verbs Adventure</title>
+    <title>Конструктор Карт и iframe-кода для Genially</title>
     <style>
-        html, body { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif; 
+        :root {
+            --primary: #6c29ff;
+            --primary-hover: #4300d6;
+            --bg-dark: #121212;
+            --bg-light: #f9f8fc;
+            --border-color: #c7c3d3;
+            --text-main: #232323;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #f0edf5; color: var(--text-main);
+            display: flex; height: 100vh; overflow: hidden;
+        }
+
+        /* Панель редактора (Слева) */
+        .sidebar {
+            width: 440px; background: white;
+            border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; height: 100%;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05); flex-shrink: 0;
+        }
+
+        .sidebar-header { padding: 15px 20px; background: var(--bg-dark); color: white; }
+        .sidebar-header h2 { margin: 0; font-size: 1.15rem; }
+
+        .settings-scroll { padding: 20px; overflow-y: auto; flex-grow: 1; }
+
+        .section-title {
+            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;
+            color: #767283; margin: 15px 0 10px 0; border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 5px; font-weight: bold;
+        }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 6px 10px; box-sizing: border-box;
+            border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.85rem;
+        }
+
+        .platform-panel {
+            background: #f1ecfc; border: 1px dashed var(--primary);
+            border-radius: 8px; padding: 10px; margin-bottom: 10px;
+        }
+
+        .btn {
+            background: var(--primary); color: white; border: none; padding: 10px 15px;
+            border-radius: 20px; cursor: pointer; font-weight: 600; width: 100%; transition: background 0.2s;
+        }
+        .btn:hover { background: var(--primary-hover); }
+        .btn-danger { background: #d83f55; color: white; margin-top: 5px; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;}
+
+        /* Зона вывода готового кода */
+        .export-area { padding: 15px 20px; border-top: 1px solid var(--border-color); background: #fdfdfd; }
+        .code-output {
+            width: 100%; height: 60px; font-family: monospace; font-size: 0.75rem;
+            margin-bottom: 8px; box-sizing: border-box; resize: none; padding: 5px;
+            border: 1px solid var(--border-color); background: #f4f4f4; border-radius: 4px;
+        }
+
+        /* Превью интерактивного холста (Справа) */
+        .preview-pane {
+            flex-grow: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 20px; position: relative;
+        }
+
+        .preview-badge {
+            position: absolute; top: 15px; left: 15px; background: rgba(18,18,18,0.7);
+            color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; z-index: 100;
+        }
+
+        #game-simulator {
+            width: 100%; max-width: 800px; height: 500px; background: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden; position: relative;
         }
         
-        /* Фон на весь экран Genially */
-        .wrapper {
-            width: 100%; height: 100%; 
-            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000') center/cover no-repeat;
-            position: relative; box-sizing: border-box;
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        .hint-click { font-size: 0.8rem; color: #6c29ff; font-style: italic; margin-bottom: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Генератор кода для Genially</h2>
+        </div>
+        
+        <div class="settings-scroll">
+            <div class="hint-click">💡 Кликните по превью-экрану справа, чтобы поставить платформу в нужную точку!</div>
+
+            <div class="section-title">Внешний вид игры</div>
+            <div class="form-group">
+                <label>Фон игрового поля (URL картинки)</label>
+                <input type="text" id="game-bg" value="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000">
+            </div>
+            <div class="form-group">
+                <label>Изображение платформы (URL)</label>
+                <input type="text" id="platform-img" value="https://img.icons8.com/color/96/wooden-plank.png">
+            </div>
+            <div class="form-group">
+                <label>Персонаж (Emoji или URL картинки)</label>
+                <input type="text" id="game-char" value="🧙">
+            </div>
+            <div class="form-group">
+                <label>Стартовое количество жизней (HP)</label>
+                <input type="number" id="game-lives" value="3" min="1" max="5">
+            </div>
+
+            <div class="section-title">Платформы и Задания</div>
+            <div id="platforms-container"></div>
+        </div>
+
+        <!-- Поле с готовым кодом для копирования -->
+        <div class="export-area">
+            <label style="font-size: 0.8rem; font-weight: bold; display:block; margin-bottom:4px;">Готовый код для Genially:</label>
+            <textarea class="code-output" id="iframe-code-res" readonly></textarea>
+            <button class="btn" onclick="copyIframeCode()">Скопировать iframe-код</button>
+        </div>
+    </div>
+
+    <div class="preview-pane">
+        <div class="preview-badge">Интерактивный холст (Кликайте для расстановки объектов)</div>
+        <div id="game-simulator">
+            <iframe id="preview-iframe"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Предустановленный шаблон игры
+        let platforms = [
+            { x: 15, y: 75, q: "Вы готовы начать путешествие?", a: "Да, вперед!", b: "Нет", type: "start" },
+            { x: 40, y: 60, q: "You ___ touch that! It is forbidden.", a: "mustn't", b: "don't have to", type: "correct" },
+            { x: 50, y: 35, q: "Бу-у-ум! Это ловушка!", a: "Назад!", b: "Ой-ой", type: "wrong" },
+            { x: 85, y: 40, q: "Финиш!", a: "Закончить", b: "Ура", type: "finish" }
+        ];
+
+        function init() {
+            renderSidebarPanels();
+            updateLivePreviewAndCode();
+            
+            ['game-bg', 'platform-img', 'game-char', 'game-lives'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateLivePreviewAndCode);
+            });
+
+            // Логика добавления платформ по клику на превью-карту
+            const iframe = document.getElementById('preview-iframe');
+            iframe.addEventListener('load', () => {
+                iframe.contentWindow.document.body.addEventListener('click', function(e) {
+                    if(e.target.id === 'clickable-zone' || e.target.classList.contains('wrapper')) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const clickX = Math.round((e.clientX / rect.width) * 100);
+                        const clickY = Math.round((e.clientY / rect.height) * 100);
+                        
+                        platforms.push({
+                            x: clickX, y: clickY,
+                            q: "Текст вашего нового вопроса?",
+                            a: "Вариант А", b: "Вариант Б",
+                            type: "correct"
+                        });
+                        renderSidebarPanels();
+                        updateLivePreviewAndCode();
+                    }
+                });
+            });
         }
 
-        /* Платформы (картинка деревянной доски) */
+        function renderSidebarPanels() {
+            const container = document.getElementById('platforms-container');
+            container.innerHTML = '';
+            
+            platforms.forEach((p, idx) => {
+                const panel = document.createElement('div');
+                panel.className = 'platform-panel';
+                panel.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                        <strong>Платформа #${idx + 1}</strong>
+                        <button class="btn-danger" onclick="deletePlatform(${idx})">Удалить</button>
+                    </div>
+                    
+                    <div style="display:flex; gap:5px; margin-bottom:5px;">
+                        <div>
+                            <label>X (%)</label>
+                            <input type="number" value="${p.x}" oninput="updatePlatformProp(${idx}, 'x', this.value)">
+                        </div>
+                        <div>
+                            <label>Y (%)</label>
+                            <input type="number" value="${p.y}" oninput="updatePlatformProp(${idx}, 'y', this.value)">
+                        </div>
+                        <div>
+                            <label>Логика</label>
+                            <select onchange="updatePlatformProp(${idx}, 'type', this.value)">
+                                <option value="correct" ${p.type==='correct'?'selected':''}>Верный путь</option>
+                                <option value="wrong" ${p.type==='wrong'?'selected':''}>Ловушка (-1 HP)</option>
+                                <option value="start" ${p.type==='start'?'selected':''}>Старт</option>
+                                <option value="finish" ${p.type==='finish'?'selected':''}>Финиш</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Вопрос / Текст задания</label>
+                        <input type="text" value="${p.q}" oninput="updatePlatformProp(${idx}, 'q', this.value)">
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" placeholder="Ответ А" value="${p.a}" oninput="updatePlatformProp(${idx}, 'a', this.value)">
+                        <input type="text" placeholder="Ответ Б" value="${p.b}" oninput="updatePlatformProp(${idx}, 'b', this.value)">
+                    </div>
+                `;
+                container.appendChild(panel);
+            });
+        }
+
+        function updatePlatformProp(idx, prop, val) {
+            if (prop === 'x' || prop === 'y') val = parseInt(val) || 0;
+            platforms[idx][prop] = val;
+            updateLivePreviewAndCode();
+        }
+
+        function deletePlatform(idx) {
+            platforms.splice(idx, 1);
+            renderSidebarPanels();
+            updateLivePreviewAndCode();
+        }
+
+        // Генерация исходного HTML-кода игры
+        function generateGameHTML() {
+            const bg = document.getElementById('game-bg').value;
+            const platImg = document.getElementById('platform-img').value;
+            const character = document.getElementById('game-char').value;
+            const maxLives = document.getElementById('game-lives').value;
+
+            return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
+        .wrapper { width: 100%; height: 100%; background: url('${bg}') center/cover no-repeat; position: relative; }
+        #clickable-zone { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; }
         .platform {
-            position: absolute; width: 75px; height: 40px;
-            background: url('https://img.icons8.com/color/96/wooden-plank.png') center/contain no-repeat;
+            position: absolute; width: 70px; height: 35px;
+            background: url('${platImg}') center/contain no-repeat;
             transform: translate(-50%, -50%);
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 12px; color: white;
-            text-shadow: 1px 1px 2px black; z-index: 5;
+            font-weight: bold; font-size: 11px; color: white; text-shadow: 1px 1px 2px black; z-index: 5;
         }
-
-        /* Контейнер игрока (координаты) */
         #player {
             position: absolute; width: 50px; height: 50px;
             transform: translate(-50%, -85%);
             transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10; pointer-events: none;
         }
-
-        /* Сам персонаж (эмодзи или картинка) */
-        #player-sprite {
-            width: 100%; height: 100%;
-            font-size: 2.2rem; display: flex; align-items: center; justify-content: center;
-        }
-
-        /* Победная анимация: ровно 3 прыжка персонажа */
+        #player-sprite { width: 100%; height: 100%; font-size: 2.2rem; display: flex; align-items: center; justify-content: center; }
         .victory-jump { animation: winJump 1.2s ease-in-out 3 forwards; }
-        @keyframes winJump { 
-            0%, 100% { transform: translate(-50%, -85%) scale(1); } 
-            50% { transform: translate(-50%, -140%) scale(1.15); } 
-        }
-
-        /* Панель вопросов снизу */
+        @keyframes winJump { 0%, 100% { transform: translate(-50%, -85%) scale(1); } 50% { transform: translate(-50%, -140%) scale(1.15); } }
         .quiz-panel {
             position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 600px; background: rgba(255,255,255,0.96);
-            border-radius: 12px; padding: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-            z-index: 20; text-align: center; box-sizing: border-box;
+            border-radius: 12px; padding: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 20; text-align: center; box-sizing: border-box;
         }
-
-        .question { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #1a1a1a; }
-        .buttons { display: flex; gap: 12px; justify-content: center; }
-        
-        .btn-ui {
-            background: #6c29ff; color: white; border: none; padding: 10px 20px;
-            font-size: 0.9rem; border-radius: 20px; cursor: pointer; font-weight: bold;
-            transition: background 0.2s, transform 0.1s;
-        }
-        .btn-ui:hover { background: #4300d6; transform: translateY(-1px); }
-
-        /* Сердечки (Жизни) */
-        .hud-lives {
-            position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.65);
-            padding: 6px 14px; border-radius: 20px; display: flex; gap: 4px; z-index: 20;
-            color: white; font-weight: bold; align-items: center; font-size: 0.9rem;
-        }
+        .question { font-size: 1rem; font-weight: bold; margin-bottom: 8px; color: #121212; }
+        .buttons { display: flex; gap: 10px; justify-content: center; }
+        .btn-ui { background: #6c29ff; color: white; border: none; padding: 8px 16px; font-size: 0.9rem; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .hud-lives { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 20px; display: flex; gap: 4px; z-index: 20; color: white; font-weight: bold; align-items: center; font-size: 0.9rem; }
         .heart { color: #d83f55; font-size: 1.1rem; }
     </style>
 </head>
 <body>
-
 <div class="wrapper">
+    <div id="clickable-zone"></div>
     <div class="hud-lives">HP: <div id="hearts-box"></div></div>
     <div id="map-objects"></div>
-    <div id="player"><div id="player-sprite">🧙</div></div>
-
-    <div class="quiz-panel" id="quiz-panel">
-        <div class="question" id="q-text">Загрузка...</div>
-        <div class="buttons" id="b-box"></div>
-    </div>
+    <div id="player"><div id="player-sprite">${character.startsWith('http') ? `<img src="${character}" style="width:100%;height:100%;object-fit:contain;">` : character}</div></div>
+    <div class="quiz-panel"><div class="question" id="q-text"></div><div class="buttons" id="b-box"></div></div>
 </div>
-
 <script>
-    // ==========================================
-    // БЛОК НАСТРОЕК (МЕНЯЙТЕ ЗАДАНИЯ ПРЯМО ТУТ)
-    // ==========================================
-    const maxLives = 3; // Количество жизней
+    const data = ${JSON.stringify(platforms)};
+    let maxLives = ${maxLives}, currentLives = maxLives, currentIdx = 0;
+    const map = document.getElementById('map-objects'), player = document.getElementById('player'), qText = document.getElementById('q-text'), bBox = document.getElementById('b-box'), hBox = document.getElementById('hearts-box');
     
-    // Координаты (x, y) платформ в % от экрана. 
-    // Если тип "wrong" — это ловушка. Игрок потеряет жизнь и вернется назад.
-    const platforms = [
-        { "x": 15, "y": 75, "type": "start", "question": "Are you ready to practice Modal Verbs?", "answerA": "Let's go!", "answerB": "No, wait" },
-        { "x": 35, "y": 60, "type": "correct", "question": "You ___ look at me when I'm speaking to you!", "answerA": "must", "answerB": "might" },
-        { "x": 50, "y": 42, "type": "wrong", "question": "Ой! Это ложная платформа-ловушка.", "answerA": "Назад", "answerB": "Упс" },
-        { "x": 70, "y": 55, "type": "correct", "question": "I ___ ride a bicycle when I was only five.", "answerA": "could", "answerB": "can" },
-        { "x": 88, "y": 35, "type": "finish", "question": "", "answerA": "", "answerB": "" }
-    ];
-    // ==========================================
-
-    let currentLives = maxLives;
-    let currentPlatformIndex = 0;
-
-    const mapObjects = document.getElementById('map-objects');
-    const player = document.getElementById('player');
-    const qText = document.getElementById('q-text');
-    const bBox = document.getElementById('b-box');
-    const heartsBox = document.getElementById('hearts-box');
-
-    function initGame() {
-        currentLives = maxLives;
-        currentPlatformIndex = 0;
-        player.classList.remove('victory-jump');
-        buildMap();
-    }
-
-    function buildMap() {
-        mapObjects.innerHTML = '';
-        platforms.forEach((p) => {
-            const el = document.createElement('div');
-            el.className = 'platform';
-            el.style.left = p.x + '%';
-            el.style.top = p.y + '%';
-            if(p.type === 'finish') el.innerHTML = '🏁';
-            mapObjects.appendChild(el);
+    function build() {
+        map.innerHTML = '';
+        data.forEach((p) => {
+            const el = document.createElement('div'); el.className = 'platform'; el.style.left = p.x + '%'; el.style.top = p.y + '%';
+            if(p.type === 'finish') el.innerHTML = '🏁'; map.appendChild(el);
         });
-        
-        updateHUD();
-        syncPlayerPosition();
-        updateQuiz();
+        updateHUD(); sync(); updateQuiz();
     }
-
-    function syncPlayerPosition() {
-        const activePlat = platforms[currentPlatformIndex];
-        if(activePlat) {
-            player.style.left = activePlat.x + '%';
-            player.style.top = activePlat.y + '%';
-        }
-    }
-
-    function updateHUD() {
-        heartsBox.innerHTML = '';
-        for(let i = 0; i < currentLives; i++) {
-            heartsBox.innerHTML += '<span class="heart">❤️</span>';
-        }
-        if(currentLives <= 0) gameOver();
-    }
-
+    function sync() { const p = data[currentIdx]; if(p){ player.style.left = p.x+'%'; player.style.top = p.y+'%'; } }
+    function updateHUD() { hBox.innerHTML = '❤️'.repeat(currentLives); if(currentLives <= 0) { qText.innerText = "💥 Игра окончена!"; bBox.innerHTML = '<button class="btn-ui" onclick="currentLives=maxLives;currentIdx=0;build()">Повторить</button>'; } }
     function updateQuiz() {
-        const currentPlat = platforms[currentPlatformIndex];
-        if (!currentPlat || currentPlat.type === 'finish') {
-            winGame();
-            return;
+        if(currentLives <= 0) return;
+        const p = data[currentIdx];
+        if(!p || p.type === 'finish') { qText.innerText = "🎉 Победитель!"; bBox.innerHTML = ''; player.firstElementChild.classList.add('victory-jump'); return; }
+        qText.innerText = p.q;
+        bBox.innerHTML = \`<button class="btn-ui" onclick="go('a')">\${p.a}</button><button class="btn-ui" onclick="go('b')">\${p.b}</button>\`;
+    }
+    function go(ans) {
+        let nxt = currentIdx + 1; if(nxt >= data.length) return;
+        if(data[nxt].type === 'wrong') {
+            currentIdx = nxt; sync(); currentLives--; updateHUD();
+            if(currentLives > 0) { setTimeout(() => { currentIdx = Math.max(0, nxt - 1); sync(); updateQuiz(); }, 800); }
+        } else { currentIdx = nxt; sync(); setTimeout(updateQuiz, 500); }
+    }
+    build();
+<\/script>
+</body>
+</html>`;
         }
 
-        qText.innerText = currentPlat.question;
-        bBox.innerHTML = `
-            <button class="btn-ui" onclick="handleChoice('a')">${currentPlat.answerA}</button>
-            <button class="btn-ui" onclick="handleChoice('b')">${currentPlat.answerB}</button>
-        `;
-    }
-
-    function handleChoice(letter) {
-        let targetIdx = currentPlatformIndex + 1;
-        if (targetIdx >= platforms.length) return;
-
-        const targetPlat = platforms[targetIdx];
-
-        if(targetPlat.type === 'wrong') {
-            currentPlatformIndex = targetIdx;
-            syncPlayerPosition();
-            currentLives--;
-            updateHUD();
+        function updateLivePreviewAndCode() {
+            const gameHtml = generateGameHTML();
             
-            if(currentLives > 0) {
-                setTimeout(() => {
-                    currentPlatformIndex = Math.max(0, targetIdx - 1);
-                    syncPlayerPosition();
-                    updateQuiz();
-                }, 800);
-            }
-        } else {
-            currentPlatformIndex = targetIdx;
-            syncPlayerPosition();
-            setTimeout(updateQuiz, 600);
+            // 1. Обновляем живой предпросмотр в iframe
+            const iframe = document.getElementById('preview-iframe');
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            doc.open();
+            doc.write(gameHtml);
+            doc.close();
+
+            // 2. Генерируем сжатый, чистый data:text/html iframe-код специально для Genially
+            const encodedHtml = btoa(unescape(encodeURIComponent(gameHtml)));
+            const iframeCode = `<iframe src="data:text/html;base64,${encodedHtml}" width="100%" height="100%" style="border:none;" allowfullscreen></iframe>`;
+            
+            document.getElementById('iframe-code-res').value = iframeCode;
         }
-    }
 
-    function gameOver() {
-        qText.innerText = "💥 Жизни закончились! Попробуем сначала?";
-        bBox.innerHTML = '<button class="btn-ui" onclick="initGame()">Сбросить уровень</button>';
-    }
+        function copyIframeCode() {
+            const copyText = document.getElementById('iframe-code-res');
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            alert("Код успешно скопирован! Теперь вставьте его в Genially через (Вставить -> Другое).");
+        }
 
-    function winGame() {
-        qText.innerText = "🎉 Великолепно! Вы успешно прошли весь маршрут!";
-        bBox.innerHTML = '';
-        player.classList.add('victory-jump');
-    }
-
-    window.onload = initGame;
-</script>
-
+        window.onload = init;
+    </script>
 </body>
 </html>
