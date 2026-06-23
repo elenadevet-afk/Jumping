@@ -15,7 +15,7 @@
 
 <div id="panel">
     <h2>Quest Settings 🛠️</h2>
-    Character Size: <input type="range" id="p-size" min="20" max="150" value="70" oninput="draw()"><br>
+    Character Size: <input type="range" id="p-size" min="20" max="300" value="100" oninput="draw()"><br>
     Lives: <input type="number" id="lives-count" value="3" min="1" max="10" oninput="draw()"><br>
     Time (min): <input type="number" id="time-limit" value="5" min="0" oninput="draw()"><br>
     Platform Color: <input type="color" id="p-col" value="#4caf50" onchange="draw()"><br>
@@ -71,6 +71,7 @@
                 });
                 
                 function moveP(i) {
+                    // Центрируем персонажа по горизонтали платформы и ставим на её верхний край
                     p.style.left = (platformCoords[i].x + 30 - pSize/2) + "px";
                     p.style.bottom = (platformCoords[i].y + 10) + "px";
                 }
