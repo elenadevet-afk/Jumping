@@ -5,50 +5,63 @@
     <style>
         body { margin: 0; display: flex; font-family: sans-serif; background: #222; color: #fff; }
         #sidebar { width: 400px; height: 100vh; overflow-y: auto; padding: 20px; background: #333; }
-        .box { margin-bottom: 20px; padding: 10px; border: 1px solid #555; }
-        input { display: block; width: 95%; margin-bottom: 10px; }
+        .group { border: 1px solid #555; padding: 10px; margin-bottom: 10px; }
+        input { display: block; width: 95%; margin-bottom: 5px; }
         #canvas { width: 400px; height: 500px; border: 2px solid #fff; position: relative; overflow: hidden; background: #87ceeb; margin: 20px; }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <h3>Настройки лестницы</h3>
-    <label>Угол наклона (Шаг X):</label>
-    <input type="range" id="angle" min="5" max="80" value="30" oninput="update()">
-    
-    <h3>Цвета</h3>
-    <label>Ступени:</label>
-    <input type="color" id="col-steps" value="#4caf50" oninput="update()">
-    <label>Таймер:</label>
-    <input type="color" id="col-timer" value="#ff0000" oninput="update()">
-    
-    <h3>Текст</h3>
-    <input type="text" id="win-text" value="Победа!" oninput="update()">
-    <button onclick="copyToClipboard()" style="width:100%; padding:15px; background:gold; cursor:pointer;">СКОПИРОВАТЬ ИТОГОВЫЙ КОД</button>
+    <h3>⚙️ Настройки</h3>
+    <div class="group">
+        <label>Размер персонажа:</label><input type="range" id="p-size" min="20" max="150" value="70" oninput="update()">
+        <label>Угол наклона лестницы:</label><input type="range" id="angle" min="5" max="80" value="30" oninput="update()">
+    </div>
+    <div class="group">
+        <label>Ступени:</label><input type="color" id="col-steps" value="#4caf50" oninput="update()">
+        <label>Таймер:</label><input type="color" id="col-timer" value="#ff0000" oninput="update()">
+        <label>Текст (Победа):</label><input type="text" id="win-text" value="Победа!" oninput="update()">
+        <label>Кол-во жизней:</label><input type="number" id="lives" value="3" oninput="update()">
+    </div>
+    <button onclick="copyCode()" style="width:100%; padding:15px; background:gold; border:none; cursor:pointer; font-weight:bold;">СКОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
 </div>
 
 <div id="canvas"></div>
 
 <script>
     function update() {
+        const pSize = document.getElementById('p-size').value;
         const angle = document.getElementById('angle').value;
         const colSteps = document.getElementById('col-steps').value;
         const colTimer = document.getElementById('col-timer').value;
+        
         const canvas = document.getElementById('canvas');
         
+        // Создаем лестницу
         let html = `<div style="color:${colTimer}; font-weight:bold; padding:10px;">🕒 05:00</div>`;
         for(let i=0; i<8; i++) {
             html += `<div style="position:absolute; width:60px; height:10px; background:${colSteps}; 
-            left:${30 + (i*angle)}px; bottom:${50 + (i*40)}px;"></div>`;
+            left:${30 + (i*angle)}px; bottom:${60 + (i*60)}px;"></div>`;
         }
+        
+        // Добавляем персонажа на первой ступеньке (i=0)
+        // X = 30 + (0 * angle) = 30; Y = 60 + (0 * 60) = 60
+        html += `<div id="p" style="position:absolute; width:${pSize}px; height:${pSize}px; 
+        background:red; left:${30 + 30 - pSize/2}px; bottom:70px; transition:0.3s;"></div>`;
+        
         canvas.innerHTML = html;
     }
-    
-    function copyToClipboard() {
-        alert("Код для Genially скопирован!");
-        // Здесь будет полная вставка
+
+    function copyCode() {
+        const code = `
+            <!-- Вставьте этот код в Genially (Embed) -->
+            <div id="game-container">${document.getElementById('canvas').innerHTML}</div>
+        `;
+        navigator.clipboard.writeText(code);
+        alert("Код скопирован!");
     }
+    
     update();
 </script>
 </body>
