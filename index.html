@@ -22,7 +22,7 @@
     Win Panel Bg: <input type="color" id="win-bg" value="#000000" onchange="draw()"><br>
     Win Panel Border: <input type="color" id="win-border" value="#ffffff" onchange="draw()"><br>
     Win Text Color: <input type="color" id="win-col" value="#ffd700" onchange="draw()"><br>
-    Character Size: <input type="range" id="p-size" min="20" max="300" value="100" oninput="draw()"><br>
+    Character Size: <input type="range" id="p-size" min="20" max="250" value="80" oninput="draw()"><br>
     Text Color: <input type="color" id="txt-col" value="#ffffff" onchange="draw()"><br>
     Task Panel Color: <input type="color" id="m-col" value="#000000" onchange="draw()"><br>
     Button Color: <input type="color" id="btn-col" value="#444444" onchange="draw()"><br>
@@ -61,7 +61,7 @@
         const data = JSON.stringify(tasks);
         
         return `<iframe srcdoc='<!DOCTYPE html><html><body style="margin:0;overflow:hidden;background:transparent;font-family:sans-serif">
-            <div id="world" style="position:relative;width:400px;height:500px;transition:0.5s">
+            <div id="world" style="position:relative;width:400px;height:700px">
                 <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:url(${pUrl}) no-repeat center/contain;transition:0.5s;z-index:10"></div>
                 <div id="platforms-container"></div>
                 <div style="position:absolute;top:5px;left:10px;color:${timerCol};font-weight:bold;background:rgba(255,255,255,0.7);padding:2px 8px;border-radius:10px;border:1px solid ${timerCol}">🕒 <span id="time-val"></span></div>
@@ -73,30 +73,29 @@
                 <button id="b2" onclick="check(false)" style="display:block;width:100%;cursor:pointer;background:${btnCol};color:${txtCol};"></button>
             </div>
             <script>
-                const tasks=${data}, p=document.getElementById("p"), world=document.getElementById("world"), q=document.getElementById("q"), b1=document.getElementById("b1"), b2=document.getElementById("b2"), tVal=document.getElementById("time-val");
+                const tasks=${data}, p=document.getElementById("p"), q=document.getElementById("q"), b1=document.getElementById("b1"), b2=document.getElementById("b2"), tVal=document.getElementById("time-val");
                 const pSize=${pSize}; let lvl=0, lives=${livesCount}, timeLeft=${timeLimit};
                 const platformCoords = [];
                 tasks.forEach((_,i)=>{
                     const d=document.createElement("div");
-                    const x = 20 + (i * 30), y = 50 + (i * 40);
+                    const x = 30 + (i * 25), y = 40 + (i * 45);
                     platformCoords.push({x: x, y: y});
-                    d.style="position:absolute;width:80px;height:12px;background:${pCol};left:"+x+"px;bottom:"+y+"px;border-radius:5px";
+                    d.style="position:absolute;width:70px;height:10px;background:${pCol};left:"+x+"px;bottom:"+y+"px;border-radius:5px";
                     document.getElementById("platforms-container").appendChild(d);
                 });
                 
-                function updateView(i) {
-                    p.style.left = (platformCoords[i].x + 40 - pSize/2) + "px";
+                function moveP(i) {
+                    p.style.left = (platformCoords[i].x + 35 - pSize/2) + "px";
                     p.style.bottom = (platformCoords[i].y + 10) + "px";
-                    if (platformCoords[i].y > 200) world.style.bottom = -(platformCoords[i].y - 200) + "px";
                 }
                 
                 function check(isRight){
                     const r = isRight ? (b1.dataset.r==="true") : (b2.dataset.r==="true");
                     if(r){
                         lvl++;
-                        if(lvl < tasks.length) { updateView(lvl); show(); }
+                        if(lvl < tasks.length) { moveP(lvl); show(); }
                         else document.getElementById("msg-box").style.display="block";
-                    } else { world.style.bottom = "0px"; lvl=0; updateView(0); show(); }
+                    } else { lvl=0; moveP(0); show(); }
                 }
                 function show(){ 
                     q.innerText=tasks[lvl].q; const c=Math.random()>0.5;
@@ -104,13 +103,9 @@
                     b1.dataset.r=c; b2.dataset.r=!c;
                 }
                 if(timeLeft>0) setInterval(()=>{ timeLeft--; let m=Math.floor(timeLeft/60), s=timeLeft%60; tVal.innerText=m+":"+(s<10?"0":"")+s; }, 1000);
-                updateView(0); show();
+                moveP(0); show();
             <\/script></body></html>' width="400" height="500" frameborder="0" allowtransparency="true"></iframe>`;
     }
 
     function draw() { document.getElementById('preview-frame').innerHTML = getCode(); }
     function copyCode() { navigator.clipboard.writeText(getCode()); alert("Code copied!"); }
-    renderEditor(); draw();
-</script>
-</body>
-</html>
