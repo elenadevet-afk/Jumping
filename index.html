@@ -15,17 +15,10 @@
 
 <div id="panel">
     <h2>Quest Settings 🛠️</h2>
+    Character Size: <input type="range" id="p-size" min="50" max="400" value="150" oninput="draw()"><br>
     Lives: <input type="number" id="lives-count" value="3" min="1" max="10" oninput="draw()"><br>
     Time (min): <input type="number" id="time-limit" value="5" min="0" oninput="draw()"><br>
-    Timer Color: <input type="color" id="timer-col" value="#ff0000" onchange="draw()"><br>
     Victory Text: <input type="text" id="win-text" value="Well done!" oninput="draw()"><br>
-    Win Panel Bg: <input type="color" id="win-bg" value="#000000" onchange="draw()"><br>
-    Win Panel Border: <input type="color" id="win-border" value="#ffffff" onchange="draw()"><br>
-    Win Text Color: <input type="color" id="win-col" value="#ffd700" onchange="draw()"><br>
-    Character Size: <input type="range" id="p-size" min="20" max="400" value="100" oninput="draw()"><br>
-    Text Color: <input type="color" id="txt-col" value="#ffffff" onchange="draw()"><br>
-    Task Panel Color: <input type="color" id="m-col" value="#000000" onchange="draw()"><br>
-    Button Color: <input type="color" id="btn-col" value="#444444" onchange="draw()"><br>
     Platform Color: <input type="color" id="p-col" value="#4caf50" onchange="draw()"><br>
     Character URL: <input type="text" id="p-url" value="https://cdn-icons-png.flaticon.com/128/1997/1997576.png" oninput="draw()"><br>
     <div id="q-list"></div>
@@ -33,7 +26,7 @@
 </div>
 
 <div id="view" style="flex-grow:1; display:flex; justify-content:center; align-items:center;">
-    <div id="preview-frame" style="background:#87ceeb; width:400px; height:700px;"></div>
+    <div id="preview-frame" style="background:#87ceeb; width:400px; height:600px;"></div>
 </div>
 
 <script>
@@ -51,48 +44,46 @@
     }
 
     function getCode() {
-        const pSize = document.getElementById('p-size').value, pUrl = document.getElementById('p-url').value;
-        const pCol = document.getElementById('p-col').value, txtCol = document.getElementById('txt-col').value;
-        const btnCol = document.getElementById('btn-col').value, winCol = document.getElementById('win-col').value;
-        const mCol = document.getElementById('m-col').value, winBorder = document.getElementById('win-border').value;
-        const winText = document.getElementById('win-text').value, timerCol = document.getElementById('timer-col').value;
-        const winBg = document.getElementById('win-bg').value, livesCount = document.getElementById('lives-count').value;
-        const timeLimit = document.getElementById('time-limit').value * 60;
+        const pSize = document.getElementById('p-size').value;
+        const pUrl = document.getElementById('p-url').value;
+        const pCol = document.getElementById('p-col').value;
         const data = JSON.stringify(tasks);
         
-        return `<iframe srcdoc='<!DOCTYPE html><html><body style="margin:0;overflow:hidden;background:transparent;font-family:sans-serif">
-            <div id="world" style="position:relative;width:400px;height:700px">
-                <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:url(${pUrl}) no-repeat center/contain;transition:0.5s;z-index:10"></div>
+        return `<iframe srcdoc='<!DOCTYPE html><html><body style="margin:0;background:transparent;font-family:sans-serif">
+            <div id="world" style="position:relative;width:400px;height:1000px;overflow:visible">
+                <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:url(${pUrl}) no-repeat center/contain;transition:0.5s;z-index:100"></div>
                 <div id="platforms-container"></div>
-                <div style="position:absolute;top:5px;left:10px;color:${timerCol};font-weight:bold;background:rgba(255,255,255,0.7);padding:2px 8px;border-radius:10px;border:1px solid ${timerCol}">🕒 <span id="time-val"></span></div>
             </div>
-            <div id="msg-box" style="display:none; position:absolute; top:100px; left:50px; width:300px; padding:20px; border:2px solid ${winBorder}; background:${winBg}; color:${winCol}; font-weight:bold; text-align:center; border-radius:15px; z-index:100;">${winText}</div>
-            <div id="m" style="position:absolute;bottom:0px;right:0px;width:200px;background:${mCol};opacity:0.9;padding:10px;text-align:center;color:${txtCol};z-index:50">
+            <div id="m" style="position:fixed;bottom:0px;right:0px;width:200px;background:#000;padding:10px;text-align:center;color:#fff;z-index:500">
                 <h3 id="q" style="margin:5px 0; font-size:14px;"></h3>
-                <button id="b1" onclick="check(true)" style="display:block;width:100%;margin-bottom:5px;cursor:pointer;background:${btnCol};color:${txtCol};"></button>
-                <button id="b2" onclick="check(false)" style="display:block;width:100%;cursor:pointer;background:${btnCol};color:${txtCol};"></button>
+                <button id="b1" onclick="check(true)" style="display:block;width:100%;cursor:pointer;"></button>
+                <button id="b2" onclick="check(false)" style="display:block;width:100%;cursor:pointer;"></button>
             </div>
             <script>
-                const tasks=${data}, p=document.getElementById("p"), q=document.getElementById("q"), b1=document.getElementById("b1"), b2=document.getElementById("b2"), tVal=document.getElementById("time-val");
-                const pSize=${pSize}; let lvl=0, lives=${livesCount}, timeLeft=${timeLimit};
-                const platformCoords = [];
+                const tasks=${data}, p=document.getElementById("p"), q=document.getElementById("q"), b1=document.getElementById("b1"), b2=document.getElementById("b2");
+                const pSize=${pSize}; let lvl=0;
+                
                 tasks.forEach((_,i)=>{
                     const d=document.createElement("div");
-                    const x = 30 + (i * 20), y = 30 + (i * 60);
-                    platformCoords.push({x: x, y: y});
-                    d.style="position:absolute;width:70px;height:10px;background:${pCol};left:"+x+"px;bottom:"+y+"px;border-radius:5px";
+                    const x = 50 + (i * 20), y = 50 + (i * 80);
+                    d.style="position:absolute;width:100px;height:15px;background:${pCol};left:"+x+"px;bottom:"+y+"px;border-radius:5px";
                     document.getElementById("platforms-container").appendChild(d);
+                    d.dataset.y = y; d.dataset.x = x;
                 });
+                
                 function moveP(i) {
-                    p.style.left = (platformCoords[i].x + 35 - pSize/2) + "px";
-                    p.style.bottom = (platformCoords[i].y + 10) + "px";
+                    const plats = document.querySelectorAll("#platforms-container div");
+                    p.style.left = (parseInt(plats[i].dataset.x) + 50 - pSize/2) + "px";
+                    // Сдвигаем персонажа чуть ниже, чтобы при большом размере он не улетал вверх
+                    p.style.bottom = (parseInt(plats[i].dataset.y) + 15) + "px";
                 }
+                
                 function check(isRight){
                     const r = isRight ? (b1.dataset.r==="true") : (b2.dataset.r==="true");
                     if(r){
                         lvl++;
                         if(lvl < tasks.length) { moveP(lvl); show(); }
-                        else document.getElementById("msg-box").style.display="block";
+                        else alert("Victory!");
                     } else { lvl=0; moveP(0); show(); }
                 }
                 function show(){ 
@@ -100,9 +91,8 @@
                     b1.innerText=c?tasks[lvl].right:tasks[lvl].wrong; b2.innerText=c?tasks[lvl].wrong:tasks[lvl].right;
                     b1.dataset.r=c; b2.dataset.r=!c;
                 }
-                if(timeLeft>0) setInterval(()=>{ timeLeft--; let m=Math.floor(timeLeft/60), s=timeLeft%60; tVal.innerText=m+":"+(s<10?"0":"")+s; }, 1000);
                 moveP(0); show();
-            <\/script></body></html>' width="400" height="700" frameborder="0" allowtransparency="true"></iframe>`;
+            <\/script></body></html>' width="400" height="600" frameborder="0" allowtransparency="true"></iframe>`;
     }
 
     function draw() { document.getElementById('preview-frame').innerHTML = getCode(); }
