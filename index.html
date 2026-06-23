@@ -17,6 +17,8 @@
     <h2>Quest Settings 🛠️</h2>
     Character Size: <input type="range" id="p-size" min="20" max="300" value="100" oninput="draw()"><br>
     Lives: <input type="number" id="lives-count" value="3" min="1" max="10" oninput="draw()"><br>
+    Platform Color: <input type="color" id="p-col" value="#4caf50" onchange="draw()"><br>
+    Character URL: <input type="text" id="p-url" value="https://cdn-icons-png.flaticon.com/128/1997/1997576.png" oninput="draw()"><br>
     <div id="q-list"></div>
     <button class="btn-copy" onclick="copyCode()">COPY CODE FOR GENIALLY</button>
 </div>
@@ -41,11 +43,14 @@
 
     function getCode() {
         const pSize = document.getElementById('p-size').value;
+        const pUrl = document.getElementById('p-url').value;
+        const pCol = document.getElementById('p-col').value;
+        const livesCount = document.getElementById('lives-count').value;
         const data = JSON.stringify(tasks);
         
         return `<iframe srcdoc='<!DOCTYPE html><html><body style="margin:0;overflow:hidden;background:transparent;font-family:sans-serif">
             <div id="world" style="position:relative;width:400px;height:500px;transition:0.5s">
-                <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:url(https://cdn-icons-png.flaticon.com/128/1997/1997576.png) no-repeat center/contain;transition:0.5s;z-index:10"></div>
+                <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:url(${pUrl}) no-repeat center/contain;transition:0.5s;z-index:10"></div>
                 <div id="platforms-container"></div>
             </div>
             <div id="m" style="position:absolute;bottom:0px;right:0px;width:200px;background:#000;opacity:0.9;padding:10px;text-align:center;color:white;z-index:50">
@@ -55,23 +60,21 @@
             </div>
             <script>
                 const tasks=${data}, p=document.getElementById("p"), world=document.getElementById("world"), q=document.getElementById("q"), b1=document.getElementById("b1"), b2=document.getElementById("b2");
-                const pSize=${pSize};
-                let lvl=0;
+                const pSize=${pSize}, pCol="${pCol}";
+                let lvl=0, lives=${livesCount};
                 const platformCoords = [];
                 
                 tasks.forEach((_,i)=>{
                     const d=document.createElement("div");
                     const x = 20 + (i * 30), y = 50 + (i * 40);
                     platformCoords.push({x: x, y: y});
-                    d.style="position:absolute;width:80px;height:12px;background:#4caf50;left:"+x+"px;bottom:"+y+"px;border-radius:5px";
+                    d.style="position:absolute;width:80px;height:12px;background:"+pCol+";left:"+x+"px;bottom:"+y+"px;border-radius:5px";
                     document.getElementById("platforms-container").appendChild(d);
                 });
                 
                 function updateView(i) {
-                    // Перемещаем персонажа
                     p.style.left = (platformCoords[i].x + 40 - pSize/2) + "px";
                     p.style.bottom = (platformCoords[i].y + 10) + "px";
-                    // Если Пантера поднимается выше 200px, сдвигаем мир вниз
                     if (platformCoords[i].y > 200) {
                         world.style.bottom = -(platformCoords[i].y - 200) + "px";
                     }
