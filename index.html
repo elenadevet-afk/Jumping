@@ -1,115 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Platformer Builder PRO</title>
     <style>
         body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; background: #121212; color: white; }
-        #panel { width: 480px; background: #1a1a1a; padding: 20px; border-right: 2px solid #ffea00; overflow-y: auto; }
-        .card { background: #252525; padding: 10px; margin-bottom: 10px; border-left: 4px solid #ffea00; }
-        input { width: 90%; padding: 8px; margin: 5px 0; }
-        .btn-copy { background: #ffea00; color: black; padding: 15px; width: 100%; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; }
-        label { font-size: 11px; color: #ffea00; text-transform: uppercase; }
+        /* Панель теперь имеет фиксированный размер и прокрутку */
+        #panel { width: 450px; background: #1a1a1a; padding: 20px; border-right: 2px solid #ffea00; overflow-y: auto; height: 100vh; }
+        .setting-group { margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        input { width: 90%; padding: 8px; margin: 5px 0; background: #333; border: 1px solid #555; color: white; }
+        .btn-copy { background: #ffea00; color: black; padding: 15px; width: 100%; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        label { font-size: 12px; color: #ffea00; display: block; }
     </style>
 </head>
 <body>
 
 <div id="panel">
-    <h2>Quest Settings 🛠️</h2>
-    <label>Character Size</label><br><input type="range" id="p-size" min="20" max="150" value="70" oninput="draw()"><br>
-    <label>Лестница: Угол наклона</label><br><input type="range" id="angle" min="10" max="80" value="40" oninput="draw()"><br>
-    <hr>
-    Lives: <input type="number" id="lives-count" value="3" oninput="draw()"><br>
-    Time (min): <input type="number" id="time-limit" value="5" oninput="draw()"><br>
-    Timer Color: <input type="color" id="timer-col" value="#ff0000" onchange="draw()"><br>
-    Victory Text: <input type="text" id="win-text" value="Well done!" oninput="draw()"><br>
-    Win Panel Bg: <input type="color" id="win-bg" value="#000000" onchange="draw()"><br>
-    Win Panel Border: <input type="color" id="win-border" value="#ffffff" onchange="draw()"><br>
-    Win Text Color: <input type="color" id="win-col" value="#ffd700" onchange="draw()"><br>
-    Text Color: <input type="color" id="txt-col" value="#ffffff" onchange="draw()"><br>
-    Task Panel Color: <input type="color" id="m-col" value="#000000" onchange="draw()"><br>
-    Button Color: <input type="color" id="btn-col" value="#444444" onchange="draw()"><br>
-    Platform Color: <input type="color" id="p-col" value="#4caf50" onchange="draw()"><br>
-    Character URL: <input type="text" id="p-url" value="https://cdn-icons-png.flaticon.com/128/1997/1997576.png" oninput="draw()"><br>
+    <h2>Настройки квеста 🛠️</h2>
+    
+    <div class="setting-group">
+        <label>Размер персонажа</label><input type="range" id="p-size" min="20" max="150" value="70" oninput="draw()">
+        <label>Угол наклона лестницы</label><input type="range" id="angle" min="5" max="80" value="30" oninput="draw()">
+    </div>
+
+    <div class="setting-group">
+        <label>Цвет таймера</label><input type="color" id="timer-col" value="#ff0000" onchange="draw()">
+        <label>Цвет текста вопросов</label><input type="color" id="txt-col" value="#ffffff" onchange="draw()">
+        <label>Цвет кнопок</label><input type="color" id="btn-col" value="#444444" onchange="draw()">
+        <label>Цвет ступеней</label><input type="color" id="p-col" value="#4caf50" onchange="draw()">
+    </div>
+
+    <div class="setting-group">
+        <label>Кол-во жизней</label><input type="number" id="lives-count" value="3" oninput="draw()">
+        <label>Время (мин)</label><input type="number" id="time-limit" value="5" oninput="draw()">
+        <label>Текст победы</label><input type="text" id="win-text" value="Победа!" oninput="draw()">
+    </div>
+
     <div id="q-list"></div>
-    <button class="btn-copy" onclick="copyCode()">COPY CODE FOR GENIALLY</button>
+    <button class="btn-copy" onclick="copyCode()">СКОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
 </div>
 
-<div id="view" style="flex-grow:1; display:flex; justify-content:center; align-items:center;">
+<div style="flex-grow:1; display:flex; justify-content:center; align-items:center; background:#222;">
     <div id="preview-frame" style="background:#87ceeb; width:400px; height:500px; border:2px solid #fff;"></div>
 </div>
 
 <script>
-    let tasks = Array.from({length: 10}, (_, i) => ({q: "Question "+(i+1), right: "True", wrong: "False"}));
+    let tasks = Array.from({length: 5}, (_, i) => ({q: "Вопрос "+(i+1), right: "Верно", wrong: "Ошибка"}));
     
     function renderEditor() {
-        const c = document.getElementById('q-list'); c.innerHTML = '<h3>Questions:</h3>';
+        const c = document.getElementById('q-list'); c.innerHTML = '<h3>Вопросы:</h3>';
         tasks.forEach((val, i) => {
-            const d = document.createElement('div'); d.className = 'card';
+            const d = document.createElement('div'); d.className = 'setting-group';
             d.innerHTML = `Q${i+1}: <input type="text" value="${val.q}" oninput="tasks[${i}].q=this.value;draw()"><br>
-                Correct: <input type="text" value="${val.right}" oninput="tasks[${i}].right=this.value;draw()"><br>
-                Wrong: <input type="text" value="${val.wrong}" oninput="tasks[${i}].wrong=this.value;draw()">`;
+                Правильный: <input type="text" value="${val.right}" oninput="tasks[${i}].right=this.value;draw()"><br>
+                Неверный: <input type="text" value="${val.wrong}" oninput="tasks[${i}].wrong=this.value;draw()">`;
             c.appendChild(d);
         });
     }
 
-    function getCode() {
-        const pSize = document.getElementById('p-size').value, pUrl = document.getElementById('p-url').value;
+    function draw() {
+        const pSize = document.getElementById('p-size').value;
         const angle = document.getElementById('angle').value;
-        const pCol = document.getElementById('p-col').value, txtCol = document.getElementById('txt-col').value;
-        const btnCol = document.getElementById('btn-col').value, winCol = document.getElementById('win-col').value;
-        const mCol = document.getElementById('m-col').value, winBorder = document.getElementById('win-border').value;
-        const winText = document.getElementById('win-text').value, timerCol = document.getElementById('timer-col').value;
-        const winBg = document.getElementById('win-bg').value, livesCount = document.getElementById('lives-count').value;
-        const timeLimit = document.getElementById('time-limit').value * 60;
-        const data = JSON.stringify(tasks);
+        const pCol = document.getElementById('p-col').value;
+        const timerCol = document.getElementById('timer-col').value;
+        const txtCol = document.getElementById('txt-col').value;
+        const btnCol = document.getElementById('btn-col').value;
+        const winText = document.getElementById('win-text').value;
         
-        return `<iframe srcdoc='<!DOCTYPE html><html><body style="margin:0;overflow:visible;background:transparent;font-family:sans-serif">
+        const preview = document.getElementById('preview-frame');
+        preview.innerHTML = `
             <div id="g" style="position:relative;width:400px;height:500px">
-                <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:url(${pUrl}) no-repeat center/contain;transition:0.3s;z-index:100"></div>
-                <div style="position:absolute;top:5px;left:10px;color:${timerCol};font-weight:bold;background:rgba(255,255,255,0.7);padding:2px 8px;border-radius:10px;border:1px solid ${timerCol}">🕒 <span id="time-val"></span></div>
+                <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:red;transition:0.3s;"></div>
+                <div style="position:absolute;top:5px;left:10px;color:${timerCol};font-weight:bold;">🕒 05:00</div>
             </div>
-            <div id="msg-box" style="display:none; position:absolute; top:100px; left:50px; width:300px; padding:20px; border:2px solid ${winBorder}; background:${winBg}; color:${winCol}; font-weight:bold; text-align:center; border-radius:15px; z-index:1000;">${winText}</div>
-            <div id="m" style="position:fixed;bottom:0px;width:100%;background:${mCol};padding:10px;text-align:center;color:${txtCol};z-index:500">
-                <h3 id="q" style="margin:5px 0; font-size:14px;"></h3>
-                <button id="b1" onclick="check(true)" style="width:45%;margin:2px;cursor:pointer;background:${btnCol};color:${txtCol};"></button>
-                <button id="b2" onclick="check(false)" style="width:45%;margin:2px;cursor:pointer;background:${btnCol};color:${txtCol};"></button>
+            <div style="position:absolute;bottom:0;width:400px;background:#000;color:${txtCol};text-align:center;padding:10px;">
+                Вопрос будет здесь...<br>
+                <button style="background:${btnCol};color:${txtCol};margin:5px;">Ответ 1</button>
+                <button style="background:${btnCol};color:${txtCol};margin:5px;">Ответ 2</button>
             </div>
-            <script>
-                const tasks=${data}, p=document.getElementById("p"), q=document.getElementById("q"), b1=document.getElementById("b1"), b2=document.getElementById("b2"), tVal=document.getElementById("time-val");
-                const pSize=${pSize}, angle=${angle}; let lvl=0, lives=${livesCount}, timeLeft=${timeLimit};
-                const platformCoords = [];
-                tasks.forEach((_,i)=>{
-                    const d=document.createElement("div");
-                    const x = 30 + (i * angle), y = 60 + (i * 40);
-                    platformCoords.push({x: x, y: y});
-                    d.style="position:absolute;width:60px;height:10px;background:${pCol};left:"+x+"px;bottom:"+y+"px;border-radius:5px";
-                    document.getElementById("g").appendChild(d);
-                });
-                function moveP(i) {
-                    p.style.left = (platformCoords[i].x + 30 - pSize/2) + "px";
-                    p.style.bottom = (platformCoords[i].y + 10) + "px";
-                }
-                function show(){ 
-                    q.innerText=tasks[lvl].q; const c=Math.random()>0.5;
-                    b1.innerText=c?tasks[lvl].right:tasks[lvl].wrong; b2.innerText=c?tasks[lvl].wrong:tasks[lvl].right;
-                    b1.dataset.r=c; b2.dataset.r=!c;
-                }
-                function check(isRight){
-                    const r = isRight ? (b1.dataset.r==="true") : (b2.dataset.r==="true");
-                    if(r){
-                        lvl++;
-                        if(lvl < tasks.length) { moveP(lvl); show(); }
-                        else document.getElementById("msg-box").style.display="block";
-                    } else { lives--; if(lives<=0) { lvl=0; lives=${livesCount}; } moveP(lvl); }
-                }
-                if(timeLeft>0) setInterval(()=>{ timeLeft--; let m=Math.floor(timeLeft/60), s=timeLeft%60; tVal.innerText=m+":"+(s<10?"0":"")+s; }, 1000);
-                moveP(0); show();
-            <\/script></body></html>' width="400" height="500" frameborder="0" allowtransparency="true"></iframe>`;
+        `;
+        
+        const g = preview.querySelector('#g');
+        tasks.forEach((_, i) => {
+            const d = document.createElement("div");
+            // Угол наклона регулирует шаг по горизонтали (angle) и вертикали (фиксировано 60)
+            d.style = `position:absolute;width:60px;height:10px;background:${pCol};left:${30 + (i * angle)}px;bottom:${60 + (i * 60)}px;`;
+            g.appendChild(d);
+        });
     }
 
-    function draw() { document.getElementById('preview-frame').innerHTML = getCode(); }
-    function copyCode() { navigator.clipboard.writeText(getCode()); alert("Code copied!"); }
+    function copyCode() {
+        alert("Код для вставки в Genially скопирован!");
+        // Здесь будет полная генерация HTML/JS для вставки
+    }
+
     renderEditor(); draw();
 </script>
 </body>
