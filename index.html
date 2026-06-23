@@ -89,27 +89,4 @@
                     p.style.left = (platformCoords[i].x + 30 - pSize/2) + "px";
                     p.style.bottom = (platformCoords[i].y + 10) + "px";
                 }
-                function check(isRight){
-                    const r = isRight ? (b1.dataset.r==="true") : (b2.dataset.r==="true");
-                    if(r){
-                        lvl++;
-                        if(lvl < tasks.length) { moveP(lvl); show(); }
-                        else document.getElementById("msg-box").style.display="block";
-                    } else { lives--; if(lives<=0) { lvl=0; lives=${livesCount}; } moveP(lvl); }
-                }
-                function show(){ 
-                    q.innerText=tasks[lvl].q; const c=Math.random()>0.5;
-                    b1.innerText=c?tasks[lvl].right:tasks[lvl].wrong; b2.innerText=c?tasks[lvl].wrong:tasks[lvl].right;
-                    b1.dataset.r=c; b2.dataset.r=!c;
-                }
-                if(timeLeft>0) setInterval(()=>{ timeLeft--; let m=Math.floor(timeLeft/60), s=timeLeft%60; tVal.innerText=m+":"+(s<10?"0":"")+s; }, 1000);
-                moveP(0); show();
-            <\/script></body></html>' width="400" height="500" frameborder="0" allowtransparency="true"></iframe>`;
-    }
-
-    function draw() { document.getElementById('preview-frame').innerHTML = getCode(); }
-    function copyCode() { navigator.clipboard.writeText(getCode()); alert("Code copied!"); }
-    renderEditor(); draw();
-</script>
-</body>
-</html>
+                function check
