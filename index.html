@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Platformer Builder PRO</title>
@@ -14,14 +14,14 @@
 <body>
 
 <div id="panel">
-    <h2>Настройка квеста 🛠️</h2>
-    Размер персонажа: <input type="range" id="p-size" min="20" max="150" value="70" oninput="draw()"><br>
-    Жизней: <input type="number" id="lives-count" value="3" min="1" max="10" oninput="draw()"><br>
-    Время (мин): <input type="number" id="time-limit" value="5" min="0" oninput="draw()"><br>
-    Цвет платформ: <input type="color" id="p-col" value="#4caf50" onchange="draw()"><br>
-    URL персонажа: <input type="text" id="p-url" value="https://cdn-icons-png.flaticon.com/128/1997/1997576.png" oninput="draw()"><br>
+    <h2>Quest Settings 🛠️</h2>
+    Character Size: <input type="range" id="p-size" min="20" max="150" value="70" oninput="draw()"><br>
+    Lives: <input type="number" id="lives-count" value="3" min="1" max="10" oninput="draw()"><br>
+    Time (min): <input type="number" id="time-limit" value="5" min="0" oninput="draw()"><br>
+    Platform Color: <input type="color" id="p-col" value="#4caf50" onchange="draw()"><br>
+    Character URL: <input type="text" id="p-url" value="https://cdn-icons-png.flaticon.com/128/1997/1997576.png" oninput="draw()"><br>
     <div id="q-list"></div>
-    <button class="btn-copy" onclick="copyCode()">СКОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
+    <button class="btn-copy" onclick="copyCode()">COPY CODE FOR GENIALLY</button>
 </div>
 
 <div id="view" style="flex-grow:1; display:flex; justify-content:center; align-items:center;">
@@ -29,15 +29,15 @@
 </div>
 
 <script>
-    let tasks = Array.from({length: 10}, (_, i) => ({q: "Вопрос "+(i+1), right: "Верно", wrong: "Ошибка"}));
+    let tasks = Array.from({length: 10}, (_, i) => ({q: "Question "+(i+1), right: "True", wrong: "False"}));
     
     function renderEditor() {
-        const c = document.getElementById('q-list'); c.innerHTML = '<h3>Вопросы:</h3>';
+        const c = document.getElementById('q-list'); c.innerHTML = '<h3>Questions:</h3>';
         tasks.forEach((val, i) => {
             const d = document.createElement('div'); d.className = 'card';
             d.innerHTML = `Q${i+1}: <input type="text" value="${val.q}" oninput="tasks[${i}].q=this.value;draw()"><br>
-                Верно: <input type="text" value="${val.right}" oninput="tasks[${i}].right=this.value;draw()"><br>
-                Ошибка: <input type="text" value="${val.wrong}" oninput="tasks[${i}].wrong=this.value;draw()">`;
+                Correct: <input type="text" value="${val.right}" oninput="tasks[${i}].right=this.value;draw()"><br>
+                Wrong: <input type="text" value="${val.wrong}" oninput="tasks[${i}].wrong=this.value;draw()">`;
             c.appendChild(d);
         });
     }
@@ -86,7 +86,7 @@
                     if(r){
                         lvl++;
                         if(lvl < tasks.length) { moveP(lvl); show(); }
-                        else alert("Победа!");
+                        else alert("Victory!");
                     } else {
                         lives--;
                         if(lives<=0) location.reload();
@@ -98,7 +98,7 @@
     }
 
     function draw() { document.getElementById('preview-frame').innerHTML = getCode(); }
-    function copyCode() { navigator.clipboard.writeText(getCode()); alert("Код скопирован!"); }
+    function copyCode() { navigator.clipboard.writeText(getCode()); alert("Code copied!"); }
     renderEditor(); draw();
 </script>
 </body>
