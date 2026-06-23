@@ -1,34 +1,37 @@
-<!DOCTYPE html>
+function copyCode() {
+        // Собираем данные из текущего состояния редактора
+        const config = {
+            pUrl: document.getElementById('p-url').value,
+            pSize: document.getElementById('p-size').value,
+            angle: document.getElementById('angle').value,
+            colSteps: document.getElementById('col-steps').value,
+            colTimer: document.getElementById('col-timer').value,
+            colPanel: document.getElementById('col-panel').value,
+            colBtn: document.getElementById('col-btn').value,
+            colText: document.getElementById('col-text').value,
+            tasks: tasks // текущий массив вопросов
+        };
+
+        // Генерируем "чистый" код игры
+        const gameHtml = `<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body { margin: 0; padding: 0; background: #87ceeb; overflow: hidden; font-family: sans-serif; }
-        #game { width: 400px; height: 500px; position: relative; }
-        .step { position: absolute; width: 60px; height: 10px; background: #4caf50; border-radius: 5px; }
-        #char { position: absolute; width: 70px; height: 70px; transition: 0.5s; }
-        #msg { position: absolute; bottom: 0; right: 0; width: 200px; background: black; color: white; padding: 10px; text-align: center; }
-    </style>
-</head>
-<body>
-    <div id="game">
-        <div id="char" style="background: url('https://cdn-icons-png.flaticon.com/128/1997/1997576.png') no-repeat center/contain;"></div>
-        <div id="msg">
-            <h3 id="q">Question</h3>
-            <button onclick="check()">True</button>
-            <button onclick="check()">False</button>
+<body style="margin:0; overflow:hidden; background:#87ceeb; font-family:sans-serif;">
+    <div style="position:relative; width:400px; height:500px;">
+        <div style="color:${config.colTimer}; font-weight:bold; padding:10px;">🕒 05:00</div>
+        ${config.tasks.map((t, i) => `<div style="position:absolute; width:60px; height:10px; background:${config.colSteps}; left:${30 + (i*config.angle)}px; bottom:${60 + (i*40)}px;"></div>`).join('')}
+        <div style="position:absolute; width:${config.pSize}px; height:${config.pSize}px; background:url('${config.pUrl}') no-repeat center/contain; left:${30 + 30 - config.pSize/2}px; bottom:70px;"></div>
+        <div style="position:absolute; bottom:0; right:0; width:200px; background:${config.colPanel}; color:${config.colText}; padding:10px; text-align:center;">
+            <h3 style="margin:5px 0; font-size:14px;">${config.tasks[0].q}</h3>
+            <button style="display:block; width:100%; background:${config.colBtn}; color:${config.colText};">${config.tasks[0].right}</button>
+            <button style="display:block; width:100%; background:${config.colBtn}; color:${config.colText};">${config.tasks[0].wrong}</button>
         </div>
     </div>
-    <script>
-        const g = document.getElementById("game");
-        for(let i=0; i<10; i++) {
-            let s = document.createElement("div");
-            s.className = "step";
-            s.style.left = (30 + i * 30) + "px";
-            s.style.bottom = (60 + i * 40) + "px";
-            g.appendChild(s);
-        }
-        function check() { alert("Correct!"); }
-    </script>
 </body>
-</html>
+</html>`.replace(/"/g, "'");
+
+        // Формируем iframe для вставки в Genially
+        const finalEmbed = `<iframe srcdoc="${gameHtml}" width="400" height="500" frameborder="0"></iframe>`;
+        
+        navigator.clipboard.writeText(finalEmbed);
+        alert("Готовый код для Genially скопирован!");
+    }
