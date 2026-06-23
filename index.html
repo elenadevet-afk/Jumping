@@ -15,13 +15,13 @@
 
 <div id="panel">
     <h2>Quest Settings 🛠️</h2>
-    Character Size: <input type="range" id="p-size" min="50" max="250" value="150" oninput="draw()"><br>
+    Character Size: <input type="range" id="p-size" min="50" max="250" value="120" oninput="draw()"><br>
     <div id="q-list"></div>
     <button class="btn-copy" onclick="copyCode()">COPY CODE FOR GENIALLY</button>
 </div>
 
 <div id="view" style="flex-grow:1; display:flex; justify-content:center; align-items:center;">
-    <div id="preview-frame" style="background:#87ceeb; width:400px; height:600px; overflow:hidden;"></div>
+    <div id="preview-frame" style="background:#87ceeb; width:400px; height:600px; border:2px solid #fff; overflow:hidden;"></div>
 </div>
 
 <script>
@@ -42,14 +42,13 @@
         const pSize = document.getElementById('p-size').value;
         const data = JSON.stringify(tasks);
         
-        return `<iframe srcdoc='<!DOCTYPE html><html><body style="margin:0;overflow:hidden;background:#87ceeb;font-family:sans-serif">
-            <div id="world" style="position:relative;width:400px;height:1000px">
+        return `<iframe srcdoc='<!DOCTYPE html><html><body style="margin:0;background:#87ceeb;overflow:hidden">
+            <div id="world" style="position:relative;width:400px;height:900px">
                 <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:url(https://cdn-icons-png.flaticon.com/128/1997/1997576.png) no-repeat center/contain;transition:0.5s;z-index:100"></div>
                 <div id="platforms-container"></div>
             </div>
-            <div id="msg-box" style="display:none; position:absolute; top:20px; width:100%; text-align:center; font-weight:bold; z-index:200;">WELL DONE!</div>
             <div id="m" style="position:fixed;bottom:0px;width:100%;background:rgba(0,0,0,0.8);padding:10px;text-align:center;color:white;z-index:500">
-                <h3 id="q" style="margin:5px 0;"></h3>
+                <h3 id="q" style="margin:5px 0; font-size:16px;"></h3>
                 <button id="b1" onclick="check(true)" style="padding:10px;margin:5px;cursor:pointer;"></button>
                 <button id="b2" onclick="check(false)" style="padding:10px;margin:5px;cursor:pointer;"></button>
             </div>
@@ -59,7 +58,8 @@
                 
                 tasks.forEach((_,i)=>{
                     const d=document.createElement("div");
-                    const x = 160, y = 50 + (i * 80);
+                    // y рассчитывается так, чтобы 10 ступеней растянулись по всей высоте
+                    const x = 150, y = 50 + (i * 80);
                     d.style="position:absolute;width:100px;height:15px;background:#4caf50;left:"+x+"px;bottom:"+y+"px;border-radius:5px";
                     document.getElementById("platforms-container").appendChild(d);
                     d.dataset.x = x; d.dataset.y = y;
@@ -68,6 +68,7 @@
                 function moveP(i) {
                     const plats = document.querySelectorAll("#platforms-container div");
                     p.style.left = (parseInt(plats[i].dataset.x) + 50 - pSize/2) + "px";
+                    // Персонаж ставится точно на платформу
                     p.style.bottom = (parseInt(plats[i].dataset.y) + 15) + "px";
                 }
                 
@@ -76,7 +77,7 @@
                     if(r){
                         lvl++;
                         if(lvl < tasks.length) { moveP(lvl); show(); }
-                        else document.getElementById("msg-box").style.display="block";
+                        else alert("Victory!");
                     } else { lvl=0; moveP(0); show(); }
                 }
                 function show(){ 
