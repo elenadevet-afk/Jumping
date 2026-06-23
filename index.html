@@ -63,7 +63,7 @@
         return `<iframe srcdoc='<!DOCTYPE html><html><body style="margin:0;overflow:hidden;background:transparent;font-family:sans-serif">
             <div id="g" style="position:relative;width:400px;height:500px">
                 <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:url(${pUrl}) no-repeat center/contain;transition:0.5s;z-index:10"></div>
-                <div style="position:absolute;top:5px;left:10px;color:${timerCol};font-weight:bold;background:rgba(255,255,255,0.7);padding:2px 8px;border-radius:10px;">🕒 <span id="time-val"></span></div>
+                <div style="position:absolute;top:5px;left:10px;color:${timerCol};font-weight:bold;background:rgba(255,255,255,0.7);padding:2px 8px;border-radius:10px;border:1px solid ${timerCol}">🕒 <span id="time-val"></span></div>
             </div>
             <div id="msg-box" style="display:none; position:absolute; top:100px; left:50px; width:300px; padding:20px; border:2px solid ${winBorder}; background:${winBg}; color:${winCol}; font-weight:bold; text-align:center; border-radius:15px; z-index:100;">${winText}</div>
             <div id="m" style="position:absolute;bottom:0px;right:0px;width:200px;background:${mCol};opacity:0.9;padding:10px;text-align:center;color:${txtCol};z-index:50">
