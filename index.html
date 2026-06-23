@@ -61,7 +61,7 @@
         const data = JSON.stringify(tasks);
         
         return `<iframe srcdoc='<!DOCTYPE html><html><body style="margin:0;overflow:hidden;background:transparent;font-family:sans-serif">
-            <div id="world" style="position:relative;width:400px;height:800px">
+            <div id="world" style="position:relative;width:400px;height:600px">
                 <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:url(${pUrl}) no-repeat center/contain;transition:0.5s;z-index:10"></div>
                 <div id="platforms-container"></div>
                 <div style="position:absolute;top:5px;left:10px;color:${timerCol};font-weight:bold;background:rgba(255,255,255,0.7);padding:2px 8px;border-radius:10px;border:1px solid ${timerCol}">🕒 <span id="time-val"></span></div>
@@ -78,8 +78,7 @@
                 const platformCoords = [];
                 tasks.forEach((_,i)=>{
                     const d=document.createElement("div");
-                    // y рассчитывается так, чтобы ступени укладывались в 600px высоты
-                    const x = 30 + (i * 25), y = 40 + (i * 50);
+                    const x = 30 + (i * 25), y = 30 + (i * 45);
                     platformCoords.push({x: x, y: y});
                     d.style="position:absolute;width:70px;height:10px;background:${pCol};left:"+x+"px;bottom:"+y+"px;border-radius:5px";
                     document.getElementById("platforms-container").appendChild(d);
