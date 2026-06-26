@@ -1,37 +1,117 @@
-function copyCode() {
-        // Собираем данные из текущего состояния редактора
-        const config = {
-            pUrl: document.getElementById('p-url').value,
-            pSize: document.getElementById('p-size').value,
-            angle: document.getElementById('angle').value,
-            colSteps: document.getElementById('col-steps').value,
-            colTimer: document.getElementById('col-timer').value,
-            colPanel: document.getElementById('col-panel').value,
-            colBtn: document.getElementById('col-btn').value,
-            colText: document.getElementById('col-text').value,
-            tasks: tasks // текущий массив вопросов
-        };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Platformer Builder PRO</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; background: #121212; color: white; }
+        #panel { width: 500px; background: #1a1a1a; padding: 20px; border-right: 2px solid #ffea00; overflow-y: auto; }
+        .card { background: #252525; padding: 10px; margin-bottom: 10px; border-left: 4px solid #ffea00; }
+        input { width: 90%; padding: 8px; margin: 5px 0; }
+        .btn-copy { background: #ffea00; color: black; padding: 15px; width: 100%; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
 
-        // Генерируем "чистый" код игры
-        const gameHtml = `<!DOCTYPE html>
-<html>
-<body style="margin:0; overflow:hidden; background:#87ceeb; font-family:sans-serif;">
-    <div style="position:relative; width:400px; height:500px;">
-        <div style="color:${config.colTimer}; font-weight:bold; padding:10px;">🕒 05:00</div>
-        ${config.tasks.map((t, i) => `<div style="position:absolute; width:60px; height:10px; background:${config.colSteps}; left:${30 + (i*config.angle)}px; bottom:${60 + (i*40)}px;"></div>`).join('')}
-        <div style="position:absolute; width:${config.pSize}px; height:${config.pSize}px; background:url('${config.pUrl}') no-repeat center/contain; left:${30 + 30 - config.pSize/2}px; bottom:70px;"></div>
-        <div style="position:absolute; bottom:0; right:0; width:200px; background:${config.colPanel}; color:${config.colText}; padding:10px; text-align:center;">
-            <h3 style="margin:5px 0; font-size:14px;">${config.tasks[0].q}</h3>
-            <button style="display:block; width:100%; background:${config.colBtn}; color:${config.colText};">${config.tasks[0].right}</button>
-            <button style="display:block; width:100%; background:${config.colBtn}; color:${config.colText};">${config.tasks[0].wrong}</button>
-        </div>
-    </div>
-</body>
-</html>`.replace(/"/g, "'");
+<div id="panel">
+    <h2>Quest Settings 🛠️</h2>
+    Lives: <input type="number" id="lives-count" value="3" min="1" max="10" oninput="draw()"><br>
+    Time (min): <input type="number" id="time-limit" value="5" min="0" oninput="draw()"><br>
+    Timer Color: <input type="color" id="timer-col" value="#ff0000" onchange="draw()"><br>
+    Victory Text: <input type="text" id="win-text" value="Well done!" oninput="draw()"><br>
+    Win Panel Bg: <input type="color" id="win-bg" value="#000000" onchange="draw()"><br>
+    Win Panel Border: <input type="color" id="win-border" value="#ffffff" onchange="draw()"><br>
+    Win Text Color: <input type="color" id="win-col" value="#ffd700" onchange="draw()"><br>
+    Character Size: <input type="range" id="p-size" min="20" max="300" value="100" oninput="draw()"><br>
+    Text Color: <input type="color" id="txt-col" value="#ffffff" onchange="draw()"><br>
+    Task Panel Color: <input type="color" id="m-col" value="#000000" onchange="draw()"><br>
+    Button Color: <input type="color" id="btn-col" value="#444444" onchange="draw()"><br>
+    Platform Color: <input type="color" id="p-col" value="#4caf50" onchange="draw()"><br>
+    Character URL: <input type="text" id="p-url" value="https://cdn-icons-png.flaticon.com/128/1997/1997576.png" oninput="draw()"><br>
+    <div id="q-list"></div>
+    <button class="btn-copy" onclick="copyCode()">COPY CODE FOR GENIALLY</button>
+</div>
 
-        // Формируем iframe для вставки в Genially
-        const finalEmbed = `<iframe srcdoc="${gameHtml}" width="400" height="500" frameborder="0"></iframe>`;
-        
-        navigator.clipboard.writeText(finalEmbed);
-        alert("Готовый код для Genially скопирован!");
+<div id="view" style="flex-grow:1; display:flex; justify-content:center; align-items:center;">
+    <div id="preview-frame" style="background:#87ceeb; width:400px; height:500px;"></div>
+</div>
+
+<script>
+    let tasks = Array.from({length: 10}, (_, i) => ({q: "Question "+(i+1), right: "True", wrong: "False"}));
+    
+    function renderEditor() {
+        const c = document.getElementById('q-list'); c.innerHTML = '<h3>Questions:</h3>';
+        tasks.forEach((val, i) => {
+            const d = document.createElement('div'); d.className = 'card';
+            d.innerHTML = `Q${i+1}: <input type="text" value="${val.q}" oninput="tasks[${i}].q=this.value;draw()"><br>
+                Correct: <input type="text" value="${val.right}" oninput="tasks[${i}].right=this.value;draw()"><br>
+                Wrong: <input type="text" value="${val.wrong}" oninput="tasks[${i}].wrong=this.value;draw()">`;
+            c.appendChild(d);
+        });
     }
+
+    function getCode() {
+        const pSize = document.getElementById('p-size').value, pUrl = document.getElementById('p-url').value;
+        const pCol = document.getElementById('p-col').value, txtCol = document.getElementById('txt-col').value;
+        const btnCol = document.getElementById('btn-col').value, winCol = document.getElementById('win-col').value;
+        const mCol = document.getElementById('m-col').value, winBorder = document.getElementById('win-border').value;
+        const winText = document.getElementById('win-text').value, timerCol = document.getElementById('timer-col').value;
+        const winBg = document.getElementById('win-bg').value, livesCount = document.getElementById('lives-count').value;
+        const timeLimit = document.getElementById('time-limit').value * 60;
+        const data = JSON.stringify(tasks);
+        
+        return `<iframe srcdoc='<!DOCTYPE html><html><body style="margin:0;overflow:hidden;background:transparent;font-family:sans-serif">
+            <div id="world" style="position:relative;width:400px;height:500px;transition:0.5s">
+                <div id="p" style="position:absolute;width:${pSize}px;height:${pSize}px;background:url(${pUrl}) no-repeat center/contain;transition:0.5s;z-index:10"></div>
+                <div id="platforms-container"></div>
+                <div style="position:absolute;top:5px;left:10px;color:${timerCol};font-weight:bold;background:rgba(255,255,255,0.7);padding:2px 8px;border-radius:10px;border:1px solid ${timerCol}">🕒 <span id="time-val"></span></div>
+            </div>
+            <div id="msg-box" style="display:none; position:absolute; top:100px; left:50px; width:300px; padding:20px; border:2px solid ${winBorder}; background:${winBg}; color:${winCol}; font-weight:bold; text-align:center; border-radius:15px; z-index:100;">${winText}</div>
+            <div id="m" style="position:absolute;bottom:0px;right:0px;width:200px;background:${mCol};opacity:0.9;padding:10px;text-align:center;color:${txtCol};z-index:50">
+                <h3 id="q" style="margin:5px 0; font-size:14px;"></h3>
+                <button id="b1" onclick="check(true)" style="display:block;width:100%;margin-bottom:5px;cursor:pointer;background:${btnCol};color:${txtCol};"></button>
+                <button id="b2" onclick="check(false)" style="display:block;width:100%;cursor:pointer;background:${btnCol};color:${txtCol};"></button>
+            </div>
+            <script>
+                const tasks=${data}, p=document.getElementById("p"), world=document.getElementById("world"), q=document.getElementById("q"), b1=document.getElementById("b1"), b2=document.getElementById("b2"), tVal=document.getElementById("time-val");
+                const pSize=${pSize}; let lvl=0, lives=${livesCount}, timeLeft=${timeLimit};
+                const platformCoords = [];
+                tasks.forEach((_,i)=>{
+                    const d=document.createElement("div");
+                    const x = (i % 2 === 0) ? 50 : 270;
+                    const y = 50 + (i * 80);
+                    platformCoords.push({x: x, y: y});
+                    d.style="position:absolute;width:80px;height:12px;background:${pCol};left:"+x+"px;bottom:"+y+"px;border-radius:5px";
+                    document.getElementById("platforms-container").appendChild(d);
+                });
+                
+                function updateView(i) {
+                    p.style.left = (platformCoords[i].x + 40 - pSize/2) + "px";
+                    p.style.bottom = (platformCoords[i].y + 10) + "px";
+                    if (platformCoords[i].y > 200) world.style.bottom = -(platformCoords[i].y - 200) + "px";
+                }
+                
+                function check(isRight){
+                    const r = isRight ? (b1.dataset.r==="true") : (b2.dataset.r==="true");
+                    if(r){
+                        lvl++;
+                        if(lvl < tasks.length) { updateView(lvl); show(); }
+                        else document.getElementById("msg-box").style.display="block";
+                    } else { world.style.bottom = "0px"; lvl=0; updateView(0); show(); }
+                }
+                function show(){ 
+                    q.innerText=tasks[lvl].q; const c=Math.random()>0.5;
+                    b1.innerText=c?tasks[lvl].right:tasks[lvl].wrong; b2.innerText=c?tasks[lvl].wrong:tasks[lvl].right;
+                    b1.dataset.r=c; b2.dataset.r=!c;
+                }
+                if(timeLeft>0) setInterval(()=>{ timeLeft--; let m=Math.floor(timeLeft/60), s=timeLeft%60; tVal.innerText=m+":"+(s<10?"0":"")+s; }, 1000);
+                updateView(0); show();
+            <\/script></body></html>' width="400" height="500" frameborder="0" allowtransparency="true"></iframe>`;
+    }
+
+    function draw() { document.getElementById('preview-frame').innerHTML = getCode(); }
+    function copyCode() { navigator.clipboard.writeText(getCode()); alert("Code copied!"); }
+    renderEditor(); draw();
+</script>
+</body>
+</html>
